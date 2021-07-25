@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fd7d4e6e-d48a-444d-9120-678823de8981" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="390b560f-0b72-43e7-8d60-2ede94180853" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="8bf8ad82-d467-4560-b59f-c5d4fa532df4" />
+	<validation:config name="Validation_Config1" doc:name="Validation Config" doc:id="805e5cd7-9cb8-477f-848c-ba7618a4d1dd" />
+	<flow name="flow_level_error_handlingFlow1" doc:id="72487d05-ef03-45f0-817a-3e83fe12f62e" >
+		<logger level="INFO" doc:name="Logger" doc:id="d6dd39fc-9cb6-4531-add8-26d6bafce4e5" />
+		<logger level="INFO" doc:name="Logger" doc:id="886cf553-4ad7-459a-9443-ed97f91f0151" />
+		<validation:is-null doc:id="9d27101e-f0d8-484d-befe-1dec51aa0189" config-ref="Validation_Config" value="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ebb16356-e1bf-4754-be5f-2223925eb7c5" />
+		<logger level="INFO" doc:name="Logger" doc:id="14c09d43-c98a-4754-96b3-b1a077009f38" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f49b8871-db07-4f12-a3ea-8e16a12f80f1" >
+				<set-payload value="i m in 1st flow" doc:name="Set Payload" doc:id="aa68d239-b133-4128-a2e5-34d01cb7c08c" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="flow_level_error_handlingFlow" doc:id="43d38774-1b82-4b74-999d-e71ddfe58463" >
+		<http:listener doc:name="Listener" doc:id="ae5431ba-11ae-4115-89b0-4e7e2777fd1b" path="/mainflow" config-ref="HTTP_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cd905d18-3f8a-407e-8e3a-e7244b3af0e2" />
+		<flow-ref doc:name="Flow Reference" doc:id="b7291fc3-aed5-4d0e-aabb-8e329e321c6d" name="flow_level_error_handlingFlow1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6da3e5e2-feb4-413f-ab02-6299a554b21a" />
+		<logger level="INFO" doc:name="Logger" doc:id="dfda416e-094e-4b79-b859-6093d60742b2" />
+		<logger level="INFO" doc:name="Logger" doc:id="be7448a5-9c7d-4634-bda4-f83d02792949" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="702b75f1-4d01-4a0e-b754-35372cc55a39" >
+				<set-payload value="i m in main flow" doc:name="set payload" doc:id="23170166-f549-45dc-8253-b70ee6cbe1ba" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="flow_level_error_handlingFlow2" doc:id="bd6201a6-ae29-40f0-adad-1d811699f317">
+		<logger level="INFO" doc:name="Logger" doc:id="abf7d40d-6372-4c73-b740-83a834b9ec7c" />
+		<logger level="INFO" doc:name="Logger" doc:id="29b95ac8-867a-4149-ab6f-872552b139eb" />
+		<validation:is-null doc:name="Is null" doc:id="5a8bb3ac-581e-4c01-afcd-144f1f9b4700" config-ref="Validation_Config1" value="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f2651646-a95a-4732-a4f3-99a89ce5156a" />
+		<logger level="INFO" doc:name="Logger" doc:id="fc20a8e0-417e-457d-9a88-6bb35aa58cf5" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="62e7f916-3e8c-4da9-acc3-8526a06b9fb6" >
+				<set-payload value="i m 2nd flow" doc:name="Set Payload" doc:id="d9c4d52b-f493-4105-8f36-63bf50c3e502" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
