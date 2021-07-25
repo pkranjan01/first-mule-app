@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d096095a-47da-4836-8ee1-97e95331d74b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="dbbf5b59-4752-4a32-8880-b72807116925" >
+		<db:data-source-connection />
+	</db:config>
+	<flow name="db-connectorFlow" doc:id="51c3fc50-7bc7-4cfa-a0ab-4cf1bc45038d" >
+		<http:listener doc:name="Listener" doc:id="90dce9cf-3c2f-4637-9aef-308cabe79039" config-ref="HTTP_Listener_config" path="/conn"/>
+		<set-variable value="10" doc:name="Set Variable" doc:id="2d448449-3e66-4d6f-80e8-993ad4f43d76" variableName="a"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="066d9e7e-3b1d-492b-8170-a4d7e62480cd" >
+			<route>
+				<db:select doc:id="2ce34bca-0288-4c87-9afc-37008f3e22b4" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from city where ID = 1]]></db:sql>
+		</db:select>
+			</route>
+			<route >
+				<db:select doc:name="Select" doc:id="0f84c53e-9fba-4d63-9124-92580c042c58">
+					<db:sql ><![CDATA[select * from city where ID = 2]]></db:sql>
+				</db:select>
+			</route>
+			<route>
+				<try doc:name="Try" doc:id="0b882177-de0a-49bd-900c-9ed5273076aa" >
+					<validation:is-null doc:id="24ab36f4-9331-497e-907f-3d2a6784e766" value="#[payload]" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1b8b8c13-403e-4fde-a4ee-8f4b6cdf1c45" >
+							<set-payload value="#[payload]" doc:name="Set Payload" doc:id="67426184-b821-4fd9-b69c-20e5f5a357b3" />
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="b32d4def-f6d1-4274-b6a2-d488f482ae4a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="43e4cba6-ea97-4607-a596-38c233952bb4" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="78da882a-e1d7-4e09-9d1c-68ed794790b9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[0].payload ++ payload[1].payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
