@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="163f3787-813d-4a29-82b9-3848560245be" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="choicerouterdemoFlow" doc:id="686c7551-edc0-4243-ac39-e90c24365df5" >
+		<http:listener doc:name="Listener" doc:id="def24b40-3a79-49cb-b10a-73dcadfdda04" config-ref="HTTP_Listener_config" path="/choice"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="7b5f8d0e-0e40-4d2e-bc93-ce13bef1fbf3" variableName="a"/>
+		<choice doc:name="Choice" doc:id="5799588b-8aea-46a3-b6a3-b529e64ac0ce" >
+			<when expression='#[vars.a == "1"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="05f57a7d-9d10-445f-95df-012339f7fc3d" message="i am route one"/>
+			</when>
+			<when expression='#[vars.a == "2"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="64590907-8269-4e94-9111-92a3b77aaad8" message="i am route2"/>
+			</when>
+			<when expression='#[vars.a == "3"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="be4c2515-d540-4991-9edc-d22f68332b3a" message="i am route3"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="23065f2a-5feb-4c44-bcd4-3f12b5fd9e81" message="i am default"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
