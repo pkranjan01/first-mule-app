@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7279b7e1-2fb2-4597-a5b4-102517aa6a94" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="jasaconnectorFlow" doc:id="d385fefe-91c4-4b43-b3ee-d0c86dc20eee" >
+		<http:listener doc:name="Listener" doc:id="98323909-bbf3-44f1-9076-def489ab1a2f" config-ref="HTTP_Listener_config" path="/path"/>
+		<set-variable value="hello world" doc:name="string Value" doc:id="a3de13f8-07c7-45e8-96c4-f874dbd315cb" variableName="string"/>
+		<java:invoke-static method="getSubString(String)" doc:id="3ebcae20-23b6-4ff6-b5e0-b7364a8153ae" class="company.TestSubstring">
+			<java:args ><![CDATA[#[arg0:vars.string]]]></java:args>
+		</java:invoke-static>
+		<logger level="INFO" doc:name="Logger" doc:id="2c2b0de4-fa0b-4bcf-b2c3-9b90451ceb8f" />
+	</flow>
+</mule>
