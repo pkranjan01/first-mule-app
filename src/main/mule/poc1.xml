@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ffa0350f-66ce-43e4-9227-23da594738a9" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="poc1Flow" doc:id="07aae6cb-6cee-4ca6-b1ed-21061135b5a7" >
+		<http:listener doc:name="Listener" doc:id="3698eca7-c8a1-4f25-8789-0ff4ff3b90bb" config-ref="HTTP_Listener_config" path="/poc"/>
+		<set-payload value="[1,2,3]" doc:name="Set Payload" doc:id="10624bc1-0d9d-429c-ba35-14e62aba6067" />
+		<ee:transform doc:name="Transform Message" doc:id="518af1fa-76b9-4fbd-9cba-11b2e22904fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ sizeOf(payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ccb026b4-243d-4b46-8dbe-69d99b8182a7" message="#[payload]"/>
+	</flow>
+</mule>
